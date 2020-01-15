@@ -1,0 +1,53 @@
+pm.test("success status", () => pm.response.to.be.success );
+
+pm.test("id was assigned", () => 
+  pm.expect(pm.response.json().id).to.be.not.null );
+
+pm.test("PartitionKey was assigned", () => 
+  pm.expect(pm.response.json().PartitionKey).to.be.not.null );
+  
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+
+pm.test("Response time is less than 200ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(200);
+});
+
+pm.test("Body contains readings", function () {
+    pm.expect(pm.response.text()).to.include("Readings");
+});
+
+var schema = {
+    "PartitionKey": "2019-01-10-testdevice",
+    "MeasurementType": "Humidity",
+    "Readings": [
+        {
+            "key": "2019-01-10T00:05",
+            "value": "0.0"
+        },
+        {
+            "key": "2019-01-10T00:10",
+            "value": "0.5"
+        }
+    ],
+    "id": "238540b3-3a69-43a8-afecd1dd",
+    "_rid": "jTcyANajKzsBAAAAAAAAAA==",
+    "_self": "dbs/jTcyAA==/cjTcyANajKzsBAAAAAAAAAA==/",
+    "_etag": "\"0d009f98-0004f8d0000\"",
+    "_attachments": "attachments/",
+    "_ts": 1578323853
+}
+
+//Validate Schema
+pm.test('IoT Response Schema Validation', function() {
+    
+    var result=tv4.validateResult(JSON.parse(responseBody), schema);
+ 
+    if(!result.valid){
+        console.log(result);
+    }
+ 
+    pm.expect(result.valid).to.be.true;
+})
+
